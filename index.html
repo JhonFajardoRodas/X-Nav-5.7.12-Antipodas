@@ -1,25 +1,86 @@
 <html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 	<head>
+    <meta charset="utf-8">
  		<title>Las Antipodas</title>
 		<style>
-			#map {
+			#map , #map2{
 				width:500px;
 				height: 400px;
 			}
  		</style>
  	</head>
 	<body>
-        	<p id='map'></p>
-  	        <script type="text/javascript" charset="utf-8">
-            function initMap(){
-                var mapDiv = document.getElementById("map");
-				var map = new google.maps.Map(mapDiv, {
-					center: {lat: 40.283743650362996, lng: -3.8191530513763428},
-					zoom: 15
-				});
- 			}
- 		</script>
-		<script src = "https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+    <p> Mi posición actual:</p>
+    <div id='map'></div>
+    <p> Las Antipodas:</p>
+    <div id='map2'></div>
+
+    <script type="text/javascript" charset="utf-8">
+
+        function initMap(position){
+          var latitud = position.coords.latitude;
+          var longitud = position.coords.longitude;
+
+          //var precision = position.coords.accuracy;
+          var mapDiv = document.getElementById("map");
+
+          var propiedades =
+			       {
+                zoom: 15,
+                center:  {lat: latitud, lng: longitud},
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+			      };
+
+			/* Creamos el mapa pasandole el div que lo va a contener y las diferentes propiedades*/
+			var map = new google.maps.Map(mapDiv, propiedades);
+
+			/* Un servicio que proporciona la API de GM es colocar marcadores sobre el mapa */
+			var marcador = new google.maps.Marker({
+                position: {lat: latitud, lng: longitud},
+                map: map,
+                title: "Tu localizacion"
+          });
+        }
+
+        /* Gestion de errores */
+        function error(errorCode){
+          if(errorCode.code == 1)
+          	alert("No has permitido buscar tu localizacion")
+          else if (errorCode.code==2)
+          	alert("Posicion no disponible")
+          else
+          	alert("Ha ocurrido un error")
+        }
+        function showAntipodas(){
+          var latiAntipodas = -0.323522;
+          var longAntipodas = 102.276001;
+          var mapAntipodas = document.getElementById("map2");
+          var propiedadesAntipodas =
+             {
+                zoom: 15,
+                center:  {lat: latiAntipodas, lng: longAntipodas},
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map2 = new google.maps.Map(mapAntipodas, propiedadesAntipodas);
+
+        }
+
+        function localize(){
+        /* Si se puede obtener la localización */
+          if (navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(initMap,error);
+          }
+          /* Si el navegador no soporta la recuperación de la geolocalización */
+          else{
+            alert('¡Oops! Tu navegador no soporta geolocalización.');
+          }
+        }
+
+    </script>
+    <script src = "https://maps.googleapis.com/maps/api/js?callback=localize" async defer></script>
+    <script src = "https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+    <script src = "https://maps.googleapis.com/maps/api/js?callback=showAntipodas" async defer></script>
 	</body>
 </html>
